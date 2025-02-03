@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>three.js webgl - materials - car</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="main.css">
+    <style>
+      body {
+        color: #444;
+        font-family: Arial, sans-serif;
+      }
+      a {
+        color: #08f;
+      }
+      #info {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 100;
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 10px;
+        border-radius: 5px;
+      }
+      #physics-data {
+        margin-top: 10px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Info Section -->
+    <div id="info">
+      <a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> car materials demo by Efim Shliamin<br/>
+      Ferrari 458 Italia model by <a href="https://sketchfab.com/models/57bf6cc56931426e87494f554df1dab6" target="_blank" rel="noopener">vicent091036</a>
+      <br><br>
+      <span>Body: <select id="body-mat"></select></span>
+      <span>Details: <select id="rim-mat"></select></span>
+      <span>Glass: <select id="glass-mat"></select></span>
+      <br><br>
+      <span>Follow camera: <input type="checkbox" id="camera-toggle"></span>
+
+      <!-- Physics Data Display -->
+      <div id="physics-data">
+        <p id="engine-rpm">Engine RPM: 0</p> 
+        <p id="gforces">G-forces: X=0.00, Y=0.00, Z=0.00</p>
+        <p id="throttle-display">G-forces: X=0.00, Y=0.00, Z=0.00</p>
+      </div>
+    </div>
+
+    <!-- Three.js Container -->
+    <div id="container"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/jstat@latest/dist/jstat.min.js"></script>
+    <script src="https://rawgit.com/jeromeetienne/threex.domevents/master/threex.domevents.js"></script>
+    <script src="//cdn.rawgit.com/mrdoob/three.js/master/build/three.min.js"></script>
+    <script src="https://rawgit.com/mrdoob/three.js/master/examples/js/controls/OrbitControls.js"></script>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
