@@ -34,7 +34,7 @@ class EngineSimulation {
       top: 0.75         // Top-end response (80-100% pedal)
     };
     this.throttleInertia = 0.15;  // Base throttle response rate
-    
+
     // Dynamic throttle response based on RPM
     this.rpmThrottleInfluence = {
       low: 1.2,         // Multiplier for low RPM (below 3000)
@@ -104,6 +104,7 @@ class EngineSimulation {
     return 1.0;
   }
 
+
   updateTemperature(delta, throttlePosition) {
     // Temperature increases with throttle and RPM
     const heatGeneration = (this.currentRPM / this.maxRPM) * throttlePosition * 10;
@@ -119,10 +120,15 @@ class EngineSimulation {
     const throttleResponse = this.getThrottleResponse(this.currentRPM, Math.abs(throttleInput));
     
     // Update throttle position with dynamic response
+    console.log(`Target Throttle INput: ${throttleInput}`);
     const targetThrottle = Math.max(0, Math.min(1, throttleInput));
     this.throttlePosition += (targetThrottle - this.throttlePosition) * 
                             throttleResponse * (1 / delta);
-    
+
+    console.log(`Target Throttle: ${targetThrottle}`);
+    console.log(`Throttle Response: ${throttleResponse}`);
+    console.log(`Throttle Position: ${this.throttlePosition}`);
+   
     // Update engine temperature
     this.updateTemperature(delta, this.throttlePosition);
     
@@ -239,6 +245,7 @@ class EngineSimulation {
     }
   }
 }
+
 var engineSim = new EngineSimulation();
 
 var carParts = {
@@ -317,7 +324,10 @@ function update() {
 
 
       // Update throttle display
-      document.getElementById('throttle-display').textContent = `Throttle: ${(throttlePosition * 100).toFixed(1)}%`;
+      // document.getElementById('throttle-display').textContent = `Throttle: ${(throttlePosition * 100).toFixed(1)}%`;
+      document.getElementById('throttle-display').textContent = 
+  `Throttle: ${(engineState.throttle * 100).toFixed(1)}%`;
+
 
     // Update front-end display
     document.getElementById('engine-rpm').textContent = 

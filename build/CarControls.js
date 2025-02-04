@@ -107,26 +107,26 @@ var CarControls = ( function ( ) {
 
 		constructor: CarControls,
 
-		onKeyDown: function ( event ) {
-
-			switch ( event.keyCode ) {
-
+		onKeyDown: function (event) {
+			console.log('Key Down:', event.keyCode); // Debugging
+		
+			switch (event.keyCode) {
 				case controlKeys.BRAKE:
 					controls.brake = true;
 					controls.moveForward = false;
 					controls.moveBackward = false;
 					break;
-
-				case controlKeys.UP: controls.moveForward = true; break;
-
-				case controlKeys.DOWN: controls.moveBackward = true; break;
-
+				case controlKeys.UP: 
+					controls.moveForward = true; 
+					console.log('Moving forward'); // Debugging
+					break;
+				case controlKeys.DOWN: 
+					controls.moveBackward = true; 
+					console.log('Moving backward'); // Debugging
+					break;
 				case controlKeys.LEFT: controls.moveLeft = true; break;
-
 				case controlKeys.RIGHT: controls.moveRight = true; break;
-
 			}
-
 		},
 
 		onKeyUp: function ( event ) {
