@@ -4,8 +4,9 @@ import Stats from './build/stats.module.js';
 import { GLTFLoader } from './build/GLTFLoader.js';
 import { PMREMGenerator } from './build/PMREMGenerator.js';
 import { DRACOLoader } from './build/DRACOLoader.js';
-import { CarControls } from './build/CarControls.js';
 import { PMREMCubeUVPacker } from './build/PMREMCubeUVPacker.js';
+import { CarControls } from './build/CarControls.js';
+
 
 // Global variables
 var camera, scene, renderer, stats, carModel, materialsLib, envMap;
@@ -181,6 +182,10 @@ class EngineSimulation {
     
     // Calculate power output
     const powerOutput = this.calculatePowerOutput();
+
+    // Log throttle position for debugging
+    console.log('Throttle Position NOW:', this.throttlePosition);
+
     
     return {
       rpm: Math.round(this.currentRPM),
@@ -302,11 +307,22 @@ function update() {
     const throttleInput = carControls.moveForward ? 1 : (carControls.moveBackward ? -1 : 0);
     const acceleration = carControls.getAcceleration();
 
+    // Log moveForward and moveBackward for debugging
+console.log('moveForward:', carControls.moveForward);
+console.log('moveBackward:', carControls.moveBackward);
+
+
+    // Log throttle input for debugging
+    console.log('Throttle Input Now:', throttleInput);
+
     // Update engine simulation
     const engineState = engineSim.updateEngine(delta, Math.abs(speed), Math.abs(throttleInput));
     engineSim.updateGear(Math.abs(speed));
     engineRPM = engineState.rpm;
     throttlePosition = engineState.throttle;
+
+    // Log throttle position for debugging
+    console.log('Throttle Position in Update:', throttlePosition);
 
     // Calculate G-forces
     gForces = calculateGForces(
@@ -315,18 +331,10 @@ function update() {
       acceleration.z
     );
 
-     // Debugging logs
-     console.log('Speed:', speed);
-     console.log('Throttle:', throttleInput);
-     console.log('Acceleration:', acceleration);
-     console.log('Engine RPM:', Math.round(engineRPM));
-     console.log('G-forces:', gForces);
-
 
       // Update throttle display
-      // document.getElementById('throttle-display').textContent = `Throttle: ${(throttlePosition * 100).toFixed(1)}%`;
       document.getElementById('throttle-display').textContent = 
-  `Throttle: ${(engineState.throttle * 100).toFixed(1)}%`;
+      `Throttle: ${(engineState.throttle * 100).toFixed(1)}%`;
 
 
     // Update front-end display

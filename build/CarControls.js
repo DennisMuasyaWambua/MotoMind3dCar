@@ -58,102 +58,113 @@ var CarControls = ( function ( ) {
 
 	};
 
-	function CarControls( maxSpeed, acceleration, brakePower, turningRadius, keys ) {
-
+	function CarControls(maxSpeed, acceleration, brakePower, turningRadius, keys) {
+		this.moveForward = false;
+		this.moveBackward = false;
+		this.moveLeft = false;
+		this.moveRight = false;
+		this.brake = false;
+	  
 		this.enabled = true;
-
 		this.elemNames = {
-			flWheel: 'wheel_fl',
-			frWheel: 'wheel_fr',
-			rlWheel: 'wheel_rl',
-			rrWheel: 'wheel_rr',
-			steeringWheel: 'steering_wheel', // set to null to disable
+		  flWheel: 'wheel_fl',
+		  frWheel: 'wheel_fr',
+		  rlWheel: 'wheel_rl',
+		  rrWheel: 'wheel_rr',
+		  steeringWheel: 'steering_wheel', // set to null to disable
 		};
-
+	  
 		// km/hr
 		this.maxSpeed = maxSpeed || 180;
-		maxSpeedReverse = - this.maxSpeed * 0.25;
-
+		this.maxSpeedReverse = -this.maxSpeed * 0.25;
+	  
 		// m/s
 		this.acceleration = acceleration || 10;
-		accelerationReverse = this.acceleration * 0.5;
-
+		this.accelerationReverse = this.acceleration * 0.5;
+	  
 		// metres
 		this.turningRadius = turningRadius || 6;
-
+	  
 		// m/s
-		deceleration = this.acceleration * 2;
-
-		// multiplied with deceleration, so breaking deceleration = ( acceleration * 2 * brakePower ) m/s
+		this.deceleration = this.acceleration * 2;
+	  
+		// multiplied with deceleration, so breaking deceleration = (acceleration * 2 * brakePower) m/s
 		this.brakePower = brakePower || 10;
-
+	  
 		// exposed so that a user can use this for various effect, e.g blur
 		this.speed = 0;
-
+	  
 		// keys used to control car - by default the arrow keys and space to brake
-		controlKeys = keys || controlKeys;
-
+		this.controlKeys = keys || {
+		  UP: 38, // ArrowUp
+		  DOWN: 40, // ArrowDown
+		  LEFT: 37, // ArrowLeft
+		  RIGHT: 39, // ArrowRight
+		  BRAKE: 32, // Space
+		};
+	  
 		// local axes of rotation - these are likely to vary between models
 		this.wheelRotationAxis = 'x';
 		this.wheelTurnAxis = 'z';
 		this.steeringWheelTurnAxis = 'y';
-
-		document.addEventListener( 'keydown', this.onKeyDown, false );
-		document.addEventListener( 'keyup', this.onKeyUp, false );
-
-	}
-
-	CarControls.prototype = {
-
+	  
+		this.onKeyDown = this.onKeyDown.bind(this);
+		this.onKeyUp = this.onKeyUp.bind(this);
+	  
+		document.addEventListener('keydown', this.onKeyDown, false);
+		document.addEventListener('keyup', this.onKeyUp, false);
+	  }
+	  
+	  CarControls.prototype = {
 		constructor: CarControls,
-
+	  
 		onKeyDown: function (event) {
-			console.log('Key Down:', event.keyCode); // Debugging
-		
-			switch (event.keyCode) {
-				case controlKeys.BRAKE:
-					controls.brake = true;
-					controls.moveForward = false;
-					controls.moveBackward = false;
-					break;
-				case controlKeys.UP: 
-					controls.moveForward = true; 
-					console.log('Moving forward'); // Debugging
-					break;
-				case controlKeys.DOWN: 
-					controls.moveBackward = true; 
-					console.log('Moving backward'); // Debugging
-					break;
-				case controlKeys.LEFT: controls.moveLeft = true; break;
-				case controlKeys.RIGHT: controls.moveRight = true; break;
-			}
+		  switch (event.keyCode) {
+			case this.controlKeys.BRAKE:
+			  this.brake = true;
+			  this.moveForward = false;
+			  this.moveBackward = false;
+			  break;
+			case this.controlKeys.UP:
+			  this.moveForward = true;
+			  break;
+			case this.controlKeys.DOWN:
+			  this.moveBackward = true;
+			  break;
+			case this.controlKeys.LEFT:
+			  this.moveLeft = true;
+			  break;
+			case this.controlKeys.RIGHT:
+			  this.moveRight = true;
+			  break;
+		  }
 		},
-
-		onKeyUp: function ( event ) {
-
-			switch ( event.keyCode ) {
-
-				case controlKeys.BRAKE: controls.brake = false; break;
-
-				case controlKeys.UP: controls.moveForward = false; break;
-
-				case controlKeys.DOWN: controls.moveBackward = false; break;
-
-				case controlKeys.LEFT: controls.moveLeft = false; break;
-
-				case controlKeys.RIGHT: controls.moveRight = false; break;
-
-			}
-
+	  
+		onKeyUp: function (event) {
+		  switch (event.keyCode) {
+			case this.controlKeys.BRAKE:
+			  this.brake = false;
+			  break;
+			case this.controlKeys.UP:
+			  this.moveForward = false;
+			  break;
+			case this.controlKeys.DOWN:
+			  this.moveBackward = false;
+			  break;
+			case this.controlKeys.LEFT:
+			  this.moveLeft = false;
+			  break;
+			case this.controlKeys.RIGHT:
+			  this.moveRight = false;
+			  break;
+		  }
 		},
-
+	  
 		dispose: function () {
-
-			document.removeEventListener( 'keydown', this.onKeyDown, false );
-			document.removeEventListener( 'keyup', this.onKeyUp, false );
-
+		  document.removeEventListener('keydown', this.onKeyDown, false);
+		  document.removeEventListener('keyup', this.onKeyUp, false);
 		},
-
+		
 		update: function ( delta ) {
 
 			if ( ! loaded || ! this.enabled ) return;
