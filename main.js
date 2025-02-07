@@ -285,12 +285,11 @@ function calculateGForces(accelerationX, accelerationY, accelerationZ) {
 // Function to gather and send data to the API
 function gatherAndSendData() {
   const data = {
-    throttle: throttlePosition,
-    gForces: gForces,
     engineRPM: engineRPM,
-    speed: carControls.speed,
-    gear: engineSim.currentGear,
-    temperature: engineSim.engineTemp,
+    Gx: gForces.Gx,
+    Gy: gForces.Gy,
+    Gz: gForces.Gz,
+    throttle: throttlePosition,
   };
 
   sendDataToAPI(data);
