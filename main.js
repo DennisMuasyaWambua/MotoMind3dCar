@@ -326,7 +326,7 @@ function gatherAndSendData() {
   formattedThrottle = formatThrottleValue(formattedThrottle);
 
   const data = {
-    engineRPM: engineRPM,
+    engine_rpm: engineRPM,
     g_x: gForces.Gx,
     g_y: gForces.Gy,
     g_z: gForces.Gz,
@@ -346,8 +346,18 @@ function sendDataToAPI(data) {
     body: JSON.stringify(data),
   })
     .then(response => response.json())
-    .then(result => console.log('Data sent successfully:', result))
+    .then(result => {
+      console.log('Data sent successfully:', result);
+      // Assuming the API returns a risk percentage in the response
+      const riskPercentage = result.risk_percentage;
+      updateRiskDisplay(riskPercentage);
+    })
     .catch(error => console.error('Error sending data:', error));
+}
+
+// Function to update the risk display on the frontend
+function updateRiskDisplay(riskPercentage) {
+  document.getElementById('risk-display').textContent = `Risk: ${riskPercentage}%`;
 }
 
 // Call the gatherAndSendData function at regular intervals (e.g., every 5 seconds)
