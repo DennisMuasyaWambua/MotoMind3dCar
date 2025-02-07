@@ -282,14 +282,55 @@ function calculateGForces(accelerationX, accelerationY, accelerationZ) {
   };
 }
 
+function formatThrottleValue(throttle) {
+  const throttleString = String(throttle);
+  const cleanThrottleString = throttleString.replace(/e[+\-0-9]+/i, ""); // Remove exponential notation
+
+  if (cleanThrottleString.length > 7) {
+    const isNegative = cleanThrottleString.startsWith('-');
+    const absThrottleString = isNegative ? cleanThrottleString.slice(1) : cleanThrottleString;
+
+    let formattedValue;
+    if (absThrottleString.includes('.')) {
+      const [integerPart, decimalPart] = absThrottleString.split('.');
+      const formattedDecimalPart = decimalPart.slice(0, 2); // Truncate to 2 decimal places
+
+      let allowedIntegerDigits = 7 - formattedDecimalPart.length;
+
+      if(allowedIntegerDigits < 0){
+        allowedIntegerDigits = 0;
+      }
+
+      const truncatedIntegerPart = integerPart.slice(0, allowedIntegerDigits);
+
+      formattedValue = `${isNegative ? '-' : ''}${truncatedIntegerPart}.${formattedDecimalPart}`;
+
+      if(formattedValue.length > 7){
+        formattedValue = `${isNegative ? '-' : ''}${integerPart.slice(0, allowedIntegerDigits-1)}.${formattedDecimalPart.slice(0, 7 - integerPart.slice(0, allowedIntegerDigits-1).length)}`;
+      }
+
+    } else {
+      formattedValue = `${isNegative ? '-' : ''}${absThrottleString.slice(0, 7)}`;
+    }
+    return parseFloat(formattedValue);
+  } else {
+    const throttleStringWithTwoDecimals = parseFloat(throttle).toFixed(2);
+    return parseFloat(throttleStringWithTwoDecimals); // Ensure it's a number
+  }
+}
+
 // Function to gather and send data to the API
 function gatherAndSendData() {
+  let formattedThrottle = parseFloat(throttlePosition.toFixed(2));
+
+  formattedThrottle = formatThrottleValue(formattedThrottle);
+
   const data = {
     engineRPM: engineRPM,
-    Gx: gForces.Gx,
-    Gy: gForces.Gy,
-    Gz: gForces.Gz,
-    throttle: throttlePosition,
+    g_x: gForces.Gx,
+    g_y: gForces.Gy,
+    g_z: gForces.Gz,
+    throttle_position: formattedThrottle,
   };
 
   sendDataToAPI(data);
