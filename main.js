@@ -270,7 +270,7 @@ var gForces = { Gx: 0, Gy: 0, Gz: 0 };
 var lastUpdateTime = Date.now();
 
 // API endpoint for sending data
-const API_URL = 'https://example.com/api/vehicle-data';
+const API_URL = 'https://carriskinsurancemodel-production.up.railway.app/riskmodel/predict/';
 
 // Function to calculate G-forces
 function calculateGForces(accelerationX, accelerationY, accelerationZ) {
@@ -280,6 +280,20 @@ function calculateGForces(accelerationX, accelerationY, accelerationZ) {
     Gy: (accelerationY || 0) / gravity,
     Gz: (accelerationZ || 0) / gravity,
   };
+}
+
+// Function to gather and send data to the API
+function gatherAndSendData() {
+  const data = {
+    throttle: throttlePosition,
+    gForces: gForces,
+    engineRPM: engineRPM,
+    speed: carControls.speed,
+    gear: engineSim.currentGear,
+    temperature: engineSim.engineTemp,
+  };
+
+  sendDataToAPI(data);
 }
 
 // Function to send data to the API
@@ -295,6 +309,9 @@ function sendDataToAPI(data) {
     .then(result => console.log('Data sent successfully:', result))
     .catch(error => console.error('Error sending data:', error));
 }
+
+// Call the gatherAndSendData function at regular intervals (e.g., every 5 seconds)
+setInterval(gatherAndSendData, 5000);
 
 // Update function
 function update() {
