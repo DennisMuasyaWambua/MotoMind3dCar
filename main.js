@@ -105,7 +105,6 @@ class EngineSimulation {
     return 1.0;
   }
 
-
   updateTemperature(delta, throttlePosition) {
     // Temperature increases with throttle and RPM
     const heatGeneration = (this.currentRPM / this.maxRPM) * throttlePosition * 10;
@@ -121,15 +120,21 @@ class EngineSimulation {
     const throttleResponse = this.getThrottleResponse(this.currentRPM, Math.abs(throttleInput));
     
     // Update throttle position with dynamic response
-    console.log(`Target Throttle INput: ${throttleInput}`);
     const targetThrottle = Math.max(0, Math.min(1, throttleInput));
     this.throttlePosition += (targetThrottle - this.throttlePosition) * 
                             throttleResponse * (1 / delta);
-
-    console.log(`Target Throttle: ${targetThrottle}`);
-    console.log(`Throttle Response: ${throttleResponse}`);
-    console.log(`Throttle Position: ${this.throttlePosition}`);
-   
+    
+    // Check for NaN values
+    if (isNaN(this.throttlePosition)) {
+      console.error('Throttle position is NaN:', {
+        targetThrottle,
+        throttleResponse,
+        delta,
+        throttlePosition: this.throttlePosition
+      });
+      this.throttlePosition = 0; // Reset to a valid value
+    }
+  
     // Update engine temperature
     this.updateTemperature(delta, this.throttlePosition);
     
@@ -182,10 +187,6 @@ class EngineSimulation {
     
     // Calculate power output
     const powerOutput = this.calculatePowerOutput();
-
-    // Log throttle position for debugging
-    console.log('Throttle Position NOW:', this.throttlePosition);
-
     
     return {
       rpm: Math.round(this.currentRPM),
@@ -282,9 +283,10 @@ function calculateGForces(accelerationX, accelerationY, accelerationZ) {
   };
 }
 
-function formatThrottleValue(throttle) {
-  const throttleString = String(throttle);
-  const cleanThrottleString = throttleString.replace(/e[+\-0-9]+/i, ""); // Remove exponential notation
+function formatValue(throttle) {
+  // const throttleString = String(throttle);
+  const formatValue = String(throttle);
+  const cleanThrottleString = formatValue.replace(/e[+\-0-9]+/i, ""); // Remove exponential notation
 
   if (cleanThrottleString.length > 7) {
     const isNegative = cleanThrottleString.startsWith('-');
@@ -322,14 +324,20 @@ function formatThrottleValue(throttle) {
 // Function to gather and send data to the API
 function gatherAndSendData() {
   let formattedThrottle = parseFloat(throttlePosition.toFixed(2));
+  let formattedGx = parseFloat(gForces.Gx.toFixed(2));
+  let formattedGy = parseFloat(gForces.Gy.toFixed(2));
+  let formattedGxz= parseFloat(gForces.Gz.toFixed(2));
 
-  formattedThrottle = formatThrottleValue(formattedThrottle);
+  formattedThrottle = formatValue(formattedThrottle);
+  formattedGx = formatValue(formattedGx);
+  formattedGy = formatValue(formattedGy);
+  formattedGxz = formatValue(formattedGxz);
 
   const data = {
     engine_rpm: engineRPM,
-    g_x: gForces.Gx,
-    g_y: gForces.Gy,
-    g_z: gForces.Gz,
+    g_x: formattedGx,
+    g_y: formattedGy,
+    g_z: formattedGxz,
     throttle_position: formattedThrottle,
   };
 
@@ -347,9 +355,10 @@ function sendDataToAPI(data) {
   })
     .then(response => response.json())
     .then(result => {
-      console.log('Data sent successfully:', result);
       // Assuming the API returns a risk percentage in the response
-      const riskPercentage = result.risk_percentage;
+      console.log("result");
+      console.log(result);
+      const riskPercentage = result?.risk.toFixed(2) || 0;
       updateRiskDisplay(riskPercentage);
     })
     .catch(error => console.error('Error sending data:', error));
@@ -375,12 +384,7 @@ function update() {
     const throttleInput = carControls.moveForward ? 1 : (carControls.moveBackward ? -1 : 0);
     const acceleration = carControls.getAcceleration();
 
-    // Log moveForward and moveBackward for debugging
-    console.log('moveForward:', carControls.moveForward);
-    console.log('moveBackward:', carControls.moveBackward);
 
-    // Log throttle input for debugging
-    console.log('Throttle Input Now:', throttleInput);
 
     // Update engine simulation
     const engineState = engineSim.updateEngine(delta, Math.abs(speed), Math.abs(throttleInput));
@@ -388,8 +392,7 @@ function update() {
     engineRPM = engineState.rpm;
     throttlePosition = engineState.throttle;
 
-    // Log throttle position for debugging
-    console.log('Throttle Position in Update:', throttlePosition);
+
 
     // Calculate G-forces
     gForces = calculateGForces(
@@ -397,9 +400,6 @@ function update() {
       acceleration.y,
       acceleration.z
     );
-
-    // Log G-forces for debugging
-    console.log('G-forces:', gForces);
 
     // Update throttle display
     document.getElementById('throttle-display').textContent = 
