@@ -326,7 +326,7 @@ function gatherAndSendData() {
   formattedThrottle = formatThrottleValue(formattedThrottle);
 
   const data = {
-    engineRPM: engineRPM,
+    engine_rpm: engineRPM,
     g_x: gForces.Gx,
     g_y: gForces.Gy,
     g_z: gForces.Gz,
@@ -346,13 +346,24 @@ function sendDataToAPI(data) {
     body: JSON.stringify(data),
   })
     .then(response => response.json())
-    .then(result => console.log('Data sent successfully:', result))
+    .then(result => {
+      console.log('Data sent successfully:', result);
+      // Assuming the API returns a risk percentage in the response
+      const riskPercentage = result.risk_percentage;
+      updateRiskDisplay(riskPercentage);
+    })
     .catch(error => console.error('Error sending data:', error));
+}
+
+// Function to update the risk display on the frontend
+function updateRiskDisplay(riskPercentage) {
+  document.getElementById('risk-display').textContent = `Risk: ${riskPercentage}%`;
 }
 
 // Call the gatherAndSendData function at regular intervals (e.g., every 5 seconds)
 setInterval(gatherAndSendData, 5000);
 
+// Update function
 // Update function
 function update() {
   var delta = clock.getDelta();
@@ -365,9 +376,8 @@ function update() {
     const acceleration = carControls.getAcceleration();
 
     // Log moveForward and moveBackward for debugging
-console.log('moveForward:', carControls.moveForward);
-console.log('moveBackward:', carControls.moveBackward);
-
+    console.log('moveForward:', carControls.moveForward);
+    console.log('moveBackward:', carControls.moveBackward);
 
     // Log throttle input for debugging
     console.log('Throttle Input Now:', throttleInput);
@@ -388,15 +398,16 @@ console.log('moveBackward:', carControls.moveBackward);
       acceleration.z
     );
 
+    // Log G-forces for debugging
+    console.log('G-forces:', gForces);
 
-      // Update throttle display
-      document.getElementById('throttle-display').textContent = 
+    // Update throttle display
+    document.getElementById('throttle-display').textContent = 
       `Throttle: ${(engineState.throttle * 100).toFixed(1)}%`;
-
 
     // Update front-end display
     document.getElementById('engine-rpm').textContent = 
-  `Engine RPM: ${engineState.rpm} | Gear: ${engineState.gear} | Temp: ${engineState.temperature}°C`;
+      `Engine RPM: ${engineState.rpm} | Gear: ${engineState.gear} | Temp: ${engineState.temperature}°C`;
     document.getElementById('gforces').textContent = 
       `G-forces: X=${gForces.Gx.toFixed(2)} (lateral), Y=${gForces.Gy.toFixed(2)} (vertical), Z=${gForces.Gz.toFixed(2)} (forward/back)`;
 
