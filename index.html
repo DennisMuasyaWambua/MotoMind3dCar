@@ -26,6 +26,79 @@
         margin-top: 10px;
         font-size: 14px;
       }
+
+      /* Modal Styles */
+      .modal {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 50%;
+        left: 20px;
+        transform: translateY(-50%);
+        width: 300px;
+        height: auto;
+        z-index: 1000;
+        border-radius: 8px;
+      }
+
+      .modal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 5px;
+        width: 100%;
+        max-width: 280px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+
+      #connect-wallet {
+        width: 100%;
+        padding: 12px;
+        background-color: #08f;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+
+      #connect-wallet:hover {
+        background-color: #06c;
+      }
+
+      button[type="submit"] {
+        background-color: #4CAF50;
+        width: 100%;
+        padding: 12px;
+        border: none;
+        color: white;
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+
+      button[type="submit"]:hover {
+        background-color: #45a049;
+      }
     </style>
   </head>
   <body>
@@ -46,12 +119,31 @@
         <p id="gforces">G-forces: X=0.00, Y=0.00, Z=0.00</p>
         <div id="throttle-display">Throttle: 0%</div>
         <div id="risk-display">Risk: 0%</div>
-
       </div>
     </div>
 
     <!-- Three.js Container -->
     <div id="container"></div>
+
+    <!-- Modal -->
+    <div class="modal">
+      <div class="modal-content">
+        <form id="modal-form">
+          <div class="form-group">
+            <button type="button" id="connect-wallet">Connect Wallet</button>
+          </div>
+          <div class="form-group">
+            <label for="car-value">Car Value ($):</label>
+            <input type="number" id="car-value" required min="0">
+          </div>
+          <div class="form-group">
+            <label for="risk-score">Risk Score:</label>
+            <input type="number" id="risk-score" required min="0" max="100" value="0">
+          </div>
+          <button type="submit">Start Simulation</button>
+        </form>
+      </div>
+    </div>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/jstat@latest/dist/jstat.min.js"></script>
@@ -59,5 +151,37 @@
     <script src="//cdn.rawgit.com/mrdoob/three.js/master/build/three.min.js"></script>
     <script src="https://rawgit.com/mrdoob/three.js/master/examples/js/controls/OrbitControls.js"></script>
     <script type="module" src="main.js"></script>
+
+    <!-- Risk Synchronization Script -->
+    <script>
+      // DOM Elements
+      const riskScoreInput = document.getElementById('risk-score');
+      const riskDisplay = document.getElementById('risk-display');
+      const modalForm = document.getElementById('modal-form');
+
+      // Risk value management
+      let riskValue = 0;
+      
+      function updateRiskDisplay(value) {
+        const clampedValue = Math.min(Math.max(value, 0), 100);
+        riskValue = clampedValue;
+        riskScoreInput.value = clampedValue;
+        riskDisplay.textContent = `Risk: ${clampedValue}%`;
+      }
+
+      // Input event listener
+      // riskScoreInput.addEventListener('input', (e) => {
+      //   updateRiskDisplay(e.target.value);
+      // });
+
+      // Form submission handler
+      modalForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        document.querySelector('.modal').style.display = 'none';
+      });
+
+      // Initialize values
+      updateRiskDisplay(0);
+    </script>
   </body>
 </html>

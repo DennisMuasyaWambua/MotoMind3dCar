@@ -1,0 +1,37 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:eu-west-1:893177745616:task-definition/3d_car_demo:4",
+    "containerDefinitions": [
+        {
+            "name": "my-3d-car",
+            "image": "893177745616.dkr.ecr.eu-west-1.amazonaws.com/my-3d-car:v1.0",
+            "cpu": 256,
+            "memory": 512,
+            "portMappings": [],
+            "essential": true,
+            "environment": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "systemControls": []
+        }
+    ],
+    "family": "3d_car_demo",
+    "networkMode": "awsvpc",
+    "requiresCompatibilities": ["FARGATE"],
+    "cpu": "512",
+    "memory": "1024",
+    "revision": 4,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EXTERNAL",
+        "EC2"
+    ],
+    "registeredAt": "2025-02-08T12:41:55.713000+03:00",
+    "registeredBy": "arn:aws:iam::893177745616:user/muasya"
+}
