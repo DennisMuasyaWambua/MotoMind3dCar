@@ -185,7 +185,7 @@ class EngineSimulation {
       this.currentRPM += (Math.random() - 0.5) * 20 * tempFactor;
     }
     
-    // Calculate power output
+    
     const powerOutput = this.calculatePowerOutput();
     
     return {
@@ -367,6 +367,7 @@ function sendDataToAPI(data) {
 // Function to update the risk display on the frontend
 function updateRiskDisplay(riskPercentage) {
   document.getElementById('risk-display').textContent = `Risk: ${riskPercentage}%`;
+  document.getElementById('risk-score').value = `${riskPercentage}%`;
 }
 
 // Call the gatherAndSendData function at regular intervals (e.g., every 5 seconds)
