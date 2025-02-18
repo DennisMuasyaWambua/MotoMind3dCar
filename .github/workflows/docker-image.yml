@@ -1,0 +1,31 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Login to docker hub
+      run: docker login -u ${{secrets.USERNAME}} -p ${{secrets.PASSWORD}}
+      
+    - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: docker build -t motormind .
+
+    - uses: actions/checkout@v4
+    - name: Tagging the image
+      run: docker tag mortormind muasyadennis/motormind:latest
+
+    - uses: actions/checkout@v4
+    - name: push image to docker hub
+      run: docker push muasyadennis/motormind:latest
+
