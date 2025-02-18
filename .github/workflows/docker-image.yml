@@ -21,9 +21,9 @@ jobs:
       env:
         DOCKER_USER: ${{ secrets.USERNAME }}
         DOCKER_PASS: ${{ secrets.PASSWORD }}
-      run: echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+      run: echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
 
     - name: Build and push Docker image
       run: |
-        docker build -t your-image-name .
-        docker push your-image-name
+        docker build -t motormind .
+        docker push motormind
