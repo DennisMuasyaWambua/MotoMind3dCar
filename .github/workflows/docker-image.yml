@@ -26,4 +26,5 @@ jobs:
     - name: Build and push Docker image
       run: |
         docker build -t motormind .
-        docker push motormind
+        docker tag motormind muasyadennis/motormind:latest
+        docker push muasyadennis/motormind:latest
