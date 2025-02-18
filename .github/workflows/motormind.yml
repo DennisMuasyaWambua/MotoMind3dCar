@@ -6,25 +6,46 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  REGISTRY: docker.io
+  IMAGE_NAME: ${{ secrets.USERNAME }}/motormind
+
 jobs:
-
-  build:
-
+  build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Login to docker hub
-      run: docker login -u ${{secrets.USERNAME}} -p ${{secrets.PASSWORD}}
-      
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build -t motormind .
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - uses: actions/checkout@v4
-    - name: Tagging the image
-      run: docker tag motormind muasyadennis/motormind:latest
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
 
-    - uses: actions/checkout@v4
-    - name: push image to docker hub
-      run: docker push muasyadennis/motormind:latest
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
