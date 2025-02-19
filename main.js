@@ -8,6 +8,9 @@ import { PMREMCubeUVPacker } from './build/PMREMCubeUVPacker.js';
 import { CarControls } from './build/CarControls.js';
 
 
+
+
+
 // Global variables
 var camera, scene, renderer, stats, carModel, materialsLib, envMap;
 var bodyMatSelect = document.getElementById('body-mat');
@@ -372,6 +375,9 @@ function updateRiskDisplay(riskPercentage) {
 
 // Call the gatherAndSendData function at regular intervals (e.g., every 5 seconds)
 setInterval(gatherAndSendData, 5000);
+// smart contract connection
+
+
 
 // Update function
 // Update function

@@ -2,9 +2,12 @@
 <html lang="en">
   <head>
     <title>three.js webgl - materials - car</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <link type="text/css" rel="stylesheet" href="main.css">
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+    <link type="text/css" rel="stylesheet" href="main.css" />
     <style>
       body {
         color: #444;
@@ -86,7 +89,7 @@
       }
 
       button[type="submit"] {
-        background-color: #4CAF50;
+        background-color: #4caf50;
         width: 100%;
         padding: 12px;
         border: none;
@@ -100,22 +103,94 @@
         background-color: #45a049;
       }
     </style>
+    <script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.5/ethers.umd.min.js" integrity="sha512-dj/EbePKIJrkhHMePgJ6ACP0v5whCZi+A8ot7WP+L0a3sPafqqWRiRhBBlGprs5hs5JjOYuTDlOic+qKc/s3mw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+    <script>
+       const connectWallet = async() => {
+        try {
+          
+     
+        console.log("connecting ")
+          const MMSDK = new MetaMaskSDK.MetaMaskSDK({
+        dappMetadata: {
+          name: "Example Pure JS Dapp",
+        },
+      });
+    
+      const accounts = await MMSDK.connect()
+      console.log("connected accounts ", accounts )
+    } catch (error) {
+         console.log("Error inititlizing sdk: ", error) 
+        }
+       }
+    </script>
+
+    <script>
+      async function handleFormSubmission() {
+
+      try {
+        const MMSDK = new MetaMaskSDK.MetaMaskSDK({
+        dappMetadata: {
+          name: "Example Pure JS Dapp",
+        },
+      });
+      const accounts = await MMSDK.connect()
+
+            // Encode data
+      const functionSig = "0x9ff1192d"
+      const encodeInputData =  ethers.defaultAbiCoder().encode(['address', 'uint256'], [accounts[0], 1]) // TODO: replace number with actual value 
+
+      // Call 
+      const result = await ethereum.request({
+      method: "eth_call",
+      params: [{
+        to: contractAddress,
+        data: functionSignature + encodeInputData.slice(2),
+      }],
+    });
+
+    console.log("result ", result )
+  } catch (error) {
+        console.log("Error submitting transaction: ", error)
+      }
+    }
+  
+    </script>
+
+    
   </head>
   <body>
     <!-- Info Section -->
     <div id="info">
-      <a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> car materials demo by Efim Shliamin<br/>
-      Ferrari 458 Italia model by <a href="https://sketchfab.com/models/57bf6cc56931426e87494f554df1dab6" target="_blank" rel="noopener">vicent091036</a>
-      <br><br>
-      <span>Body: <select id="body-mat"></select></span>
-      <span>Details: <select id="rim-mat"></select></span>
-      <span>Glass: <select id="glass-mat"></select></span>
-      <br><br>
-      <span>Follow camera: <input type="checkbox" id="camera-toggle"></span>
+      <a href="http://threejs.org" target="_blank" rel="noopener">three.js</a>
+      car materials demo by Efim Shliamin<br />
+      Ferrari 458 Italia model by
+      <a
+        href="https://sketchfab.com/models/57bf6cc56931426e87494f554df1dab6"
+        target="_blank"
+        rel="noopener"
+        >vicent091036</a
+      >
+      <br /><br />
+      <span
+        >Body:
+        <select id="body-mat"></select
+      ></span>
+      <span
+        >Details:
+        <select id="rim-mat"></select
+      ></span>
+      <span
+        >Glass:
+        <select id="glass-mat"></select
+      ></span>
+      <br /><br />
+      <span>Follow camera: <input type="checkbox" id="camera-toggle" /></span>
 
       <!-- Physics Data Display -->
       <div id="physics-data">
-        <p id="engine-rpm">Engine RPM: 0</p> 
+        <p id="engine-rpm">Engine RPM: 0</p>
         <p id="gforces">G-forces: X=0.00, Y=0.00, Z=0.00</p>
         <div id="throttle-display">Throttle: 0%</div>
         <div id="risk-display">Risk: 0%</div>
@@ -130,38 +205,230 @@
       <div class="modal-content">
         <form id="modal-form">
           <div class="form-group">
-            <button type="button" id="connect-wallet">Connect Wallet</button>
+            <button 
+                type="button" 
+                id="connect-wallet" 
+                class="connect-wallet-btn"
+                onclick="connectWallet()"
+            >
+                Connect Wallet
+            </button>
           </div>
           <div class="form-group">
             <label for="car-value">Car Value ($):</label>
-            <input type="number" id="car-value" required min="0">
+            <input type="number" id="car-value" required min="0" />
           </div>
           <div class="form-group">
             <label for="risk-score">Risk Score:</label>
-            <input type="number" id="risk-score" required min="0" max="100" value="0">
+            <input
+              type="number"
+              id="risk-score"
+              required
+              min="0"
+              max="100"
+              value="0"
+            />
           </div>
-          <button type="submit">Start Simulation</button>
+          <button onclick="handleFormSubmission()" >Start Simulation</button>
         </form>
       </div>
     </div>
 
     <!-- Scripts -->
+     <!-- Add this script right before closing </body> tag -->
+<!-- <script>
+    async function connectWallet() {
+      try {
+          // This line will trigger the MetaMask popup
+          const accounts = await window.ethereum.request({ 
+              method: 'eth_requestAccounts' 
+          });
+          
+          const account = accounts[0];
+          document.getElementById('connect-wallet').textContent = 
+              `Connected: ${account.slice(0, 6)}...${account.slice(-4)}`;
+              
+      } catch (error) {
+          console.error(error);
+          alert('Please install MetaMask or accept the connection request');
+      }
+  }
+   
+</script> -->
+<!-- <script type="module">
+  import { ethers } from "https://cdn.ethers.io/lib/ethers-5.2.esm.min.js";
+  
+
+  //  interacting with the smart contract
+  const contract_address = "0xF20b91FaB40364f978Bc1AA842d384c857Eb9dc1";
+  const ABI = [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_insurer",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "driver",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "PremiumPaid",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "driver",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newPremium",
+          "type": "uint256"
+        }
+      ],
+      "name": "PremiumUpdated",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "drivers",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "riskScore",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "basePremium",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "monthlyPremium",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "isRegistered",
+          "type": "bool"
+        }
+      ],}
+      ]
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(contract_address, ABI, signer);
+
+      async function handleFormSubmission() {
+    try {
+        // Get values from the form
+        const carValue = document.getElementById('car-value').value;
+        const riskScore = document.getElementById('risk-score').value;
+        const riskDisplay = document.getElementById('risk-display').textContent;
+        
+        // Call contract methods
+        try {
+            // Register driver
+            const registerTx = await contract.registerDriver();
+            await registerTx.wait();
+            console.log("Driver registered successfully");
+
+            // Update risk score - convert to number and remove '%' if needed
+            const riskValue = parseInt(riskDisplay.replace('Risk: ', '').replace('%', ''));
+            const updateRiskTx = await contract.updateRiskScore(riskValue);
+            await updateRiskTx.wait();
+            console.log("Risk score updated:", riskValue);
+
+            // Get premium amount (if your contract has this method)
+            const premium = await contract.calculatePremium(carValue, riskScore);
+            console.log("Premium amount:", premium.toString());
+
+            // Pay premium
+            const payTx = await contract.payPremium({ 
+                value: premium // If your contract expects payment
+            });
+            await payTx.wait();
+            console.log("Premium paid successfully");
+
+        } catch (error) {
+            console.error("Contract interaction failed:", error);
+            alert("Failed to interact with contract: " + error.message);
+        }
+
+    } catch (error) {
+        console.error("Form submission failed:", error);
+        alert("Form submission failed: " + error.message);
+    }
+}
+
+// Add event listener to your form
+document.getElementById('modal-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await handleFormSubmission();
+});
+
+// Function to update risk display in real-time
+document.getElementById('risk-score').addEventListener('input', (e) => {
+    const value = e.target.value;
+    document.getElementById('risk-display').textContent = `Risk: ${value}%`;
+});
+window.handleFormSubmission = handleFormSubmission;
+    
+      
+</script> -->
+   
+
     <script src="https://cdn.jsdelivr.net/npm/jstat@latest/dist/jstat.min.js"></script>
     <script src="https://rawgit.com/jeromeetienne/threex.domevents/master/threex.domevents.js"></script>
     <script src="//cdn.rawgit.com/mrdoob/three.js/master/build/three.min.js"></script>
     <script src="https://rawgit.com/mrdoob/three.js/master/examples/js/controls/OrbitControls.js"></script>
     <script type="module" src="main.js"></script>
+    
 
     <!-- Risk Synchronization Script -->
     <script>
       // DOM Elements
-      const riskScoreInput = document.getElementById('risk-score');
-      const riskDisplay = document.getElementById('risk-display');
-      const modalForm = document.getElementById('modal-form');
+      const riskScoreInput = document.getElementById("risk-score");
+      const riskDisplay = document.getElementById("risk-display");
+      const modalForm = document.getElementById("modal-form");
 
       // Risk value management
       let riskValue = 0;
-      
+
       function updateRiskDisplay(value) {
         const clampedValue = Math.min(Math.max(value, 0), 100);
         riskValue = clampedValue;
@@ -175,13 +442,15 @@
       // });
 
       // Form submission handler
-      modalForm.addEventListener('submit', function(e) {
+      modalForm.addEventListener("submit", function (e) {
         e.preventDefault();
-        document.querySelector('.modal').style.display = 'none';
+        document.querySelector(".modal").style.display = "none";
       });
 
       // Initialize values
       updateRiskDisplay(0);
     </script>
+
+    <!-- <script type="module" src="contractInteraction.js"></script> -->
   </body>
 </html>
