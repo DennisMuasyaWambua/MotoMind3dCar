@@ -7,6 +7,72 @@ import { DRACOLoader } from './build/DRACOLoader.js';
 import { PMREMCubeUVPacker } from './build/PMREMCubeUVPacker.js';
 import { CarControls } from './build/CarControls.js';
 
+//Contract Functions
+
+import {
+  createThirdwebClient,
+  getContract,
+  readContract,
+  prepareContractCall,
+  sendTransaction,
+} from "thirdweb";
+import { defineChain } from "thirdweb/chains";
+
+// create the client with your clientId, or secretKey if in a server environment
+const client = createThirdwebClient({
+  clientId: "ee409b501b4b5ebbdd046e4f90f9f4ce",
+});
+
+
+const chain = defineChain({
+  id: 1,
+  rpc: "https://rpc.sepolia-api.lisk.com/",
+  chainId: 4202,
+  nativeCurrency: {
+    name: "Lisk Sepolia Testnet",
+    symbol: "ETH",
+    decimals: 18,
+  },
+});
+
+// connect to your contract
+const contract = getContract({
+  client,
+  chain: defineChain(4202),
+  address: "0x936F59DA9c4E8961E128771FCCF4c015A9256911",
+});
+
+const account = useActiveAccount();
+console.log("address", account?.address);
+
+import {
+  prepareContractCall,
+  sendTransaction,
+} from "thirdweb";
+
+//Register Drivers
+const transaction = await prepareContractCall({
+  contract,
+  method:
+    "function registerDriver(address driverAddress, uint256 basePremium)",
+  params: [driverAddress, basePremium],
+});
+const { transactionHash } = await sendTransaction({
+  transaction,
+  account,
+});
+
+//Get Drivers
+import { readContract } from "thirdweb";
+
+const data = await readContract({
+  contract,
+  method:
+    "function drivers(address) view returns (uint256 riskScore, uint256 basePremium, uint256 monthlyPremium, bool isRegistered)",
+  params: [],
+});
+
+
 
 // Global variables
 var camera, scene, renderer, stats, carModel, materialsLib, envMap;
